@@ -5,14 +5,17 @@ namespace App\Http\Controllers;
 use App\Models\Author;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class AuthorController extends Controller
 {
     public function index()
     {
+        // try catch: heanding errors
         try {
-            $author = Author::query()->get(); //get all authors
-            // response successfully
+            $author = Author::query()->get(); //get all authors. mengambil semua data dari database tabel authors
+
+            // response success. akan di tampilkan saat proses berhasil/success
             return response()->json([
                 'status' => 'success',
                 'message' => 'get all author information successfully',
@@ -29,8 +32,26 @@ class AuthorController extends Controller
     }
     public function store(Request $request)
     {
-        $image = $request->file('image')->store('image/author', 'public');
+        // validation request body. required(harus di isi)
+        $validation = Validator::make($request->all(), [
+            'name'          => ['required', 'min:3'],
+            'image'         => ['required', 'image', 'mimes:jpg,png,jpeg,gif,svg', 'max:2048'],
+            'tgl_lahir'     => ['required'],
+            'gender'        => ['required'],
+            'alamat'        => ['required'],
+        ], [ //response validation error message
+            'required'      => ':attribute harus di isi',
+            'image'         => ':attribute harus berupa foto',
+            'mimes'         => ':attribute, format file harus :values',
+            'max'           => ':attribute maksimal 2Mb',
+            'min'           => ':attribute minimal 3 karakter',
+        ]);
+        if ($validation->fails()) {
+            return response()->json($validation->errors(), 400);
+        }
+        $image = $request->file('image')->store('image/author', 'public'); // upload image file and path image = public/image/author/nameFile dan 
         try {
+            // insert data into authors table
             $author = Author::query()->create([
                 'name'      => $request->input('name'),
                 'image'     => 'storage/' . $image,
@@ -38,6 +59,7 @@ class AuthorController extends Controller
                 'gender'    => $request->input('gender'),
                 'alamat'    => $request->input('alamat'),
             ]);
+
             // response successfully
             return response()->json([
                 'status'    => 'success',
@@ -72,6 +94,25 @@ class AuthorController extends Controller
     }
     public function update(Request $request, $id)
     {
+        //validation request body
+        $validation = Validator::make($request->all(), [
+            'name'          => ['required', 'min:3'],
+            'image'         => ['required', 'image', 'mimes:jpg,png,jpeg,gif,svg', 'max:2048'],
+            'tgl_lahir'     => ['required'],
+            'gender'        => ['required'],
+            'alamat'        => ['required'],
+        ], [
+            //response validation error messages
+            'required'      => ':attribute harus di isi',
+            'image'         => ':attribute harus berupa foto',
+            'mimes'         => ':attribute, format file harus type: :values',
+            'max'           => ':attribute maksimal 2Mb',
+            'min'           => ':attribute minimal 3 karakter'
+        ]);
+        if ($validation->fails()) { //cechk validation request body
+            return response()->json($validation->errors(), 400);
+        }
+        // try catch: hendling errors
         try {
             $author = Author::query()->find($id); // get athor by id
             // check image file not null

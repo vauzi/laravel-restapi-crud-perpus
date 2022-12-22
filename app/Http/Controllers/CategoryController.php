@@ -5,21 +5,24 @@ namespace App\Http\Controllers;
 use App\Models\Category;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class CategoryController extends Controller
 {
     public function index()
     {
+        // try catch: heanding errors
         try {
-            $category = Category::query()->get();
-            // response successfully
+            $category = Category::query()->get(); //get all categories. mengambil data dari database tabel categories
+
+            // response success
             return response()->json([
                 'status' => 'success',
                 'message' => 'find category get all successfully',
                 'data' => $category,
             ]);
         } catch (QueryException $e) {
-            // response error message
+            // response error
             return response()->json([
                 'status' => 'success',
                 'message' => $e->getMessage()
@@ -29,14 +32,29 @@ class CategoryController extends Controller
 
     public function store(Request $request)
     {
-        // input image file
+        //validation request
+        $validation = Validator::make($request->all(), [
+            'name' => ['required', 'min:3'], //validation required(harus di isi) min:3(minimal 3 karakter)
+            'image' => ['required', 'image', 'mimes:jpg,png,jpeg,gif,svg'] // validation fila image and format name
+        ], [
+            // response validation error message
+            'required'      => ':attribute harus di isi',
+            'image'         => ':attribute harus berupa foto',
+            'mimes'         => ':attribute, format file harus :values',
+        ]);
+        if ($validation->fails()) { // check validation request error message
+            return response()->json($validation->errors(), 400);
+        }
+        // try catch: heanding errors
         try {
-            $image = $request->file('image')->store('image/category', 'public');
+            $image = $request->file('image')->store('image/category', 'public'); // input image file and path image file
+
             // insert into category
             $category = Category::query()->create([
                 'name' => $request->input('name'),
                 'image' => 'storage/' . $image
             ]);
+
             // response successfully
             return response()->json([
                 'status' => 'success',
@@ -44,7 +62,6 @@ class CategoryController extends Controller
                 'data' => $category
             ], 201);
         } catch (QueryException $e) {
-
             // response error
             return response()->json([
                 'status' => 'error',
@@ -55,6 +72,7 @@ class CategoryController extends Controller
 
     public function show($id)
     {
+        // try catch: heanding errors
         try {
             // get category by id
             $category = Category::query()->find($id);
@@ -75,19 +93,34 @@ class CategoryController extends Controller
 
     public function update(Request $request, $id)
     {
+        //validation request
+        $validation = Validator::make($request->all(), [
+            'name' => ['required', 'min:3'], //validation required(harus di isi) min:3(minimal 3 karakter)
+            'image' => ['image', 'mimes:jpg,png,jpeg,gif,svg'] // validation fila image and format name
+        ], [
+            // response validation error message
+            'required'      => ':attribute harus di isi',
+            'image'         => ':attribute harus berupa foto',
+            'mimes'         => ':attribute, format file harus :values',
+        ]);
+        if ($validation->fails()) { // check validation request error message
+            return response()->json($validation->errors(), 400);
+        }
+
+        // try catch: heanding errors
         try {
-            $category = Category::query()->find($id); // get category by id
+            $category = Category::query()->find($id); // get category by id mengambil data dari database berdasarkan id
 
             // ceck file image ada atau tidak 
             // jika ada image yang lama akan di hapus dan di ganti yg baru
             if ($request->file('image') !== null) {
                 unlink(public_path($category->image)); // delete image file
-                $image = 'storage/' . $request->file('image')->store('image/category', 'public');
+                $image = 'storage/' . $request->file('image')->store('image/category', 'public'); // input file and name path image
             } else {
-                $image = $category->image;
+                $image = $category->image; // path image in database
             }
 
-            // insert database
+            // insert database 
             $category->update([
                 'name' => $request->input('name'),
                 'image' => $image
@@ -110,10 +143,12 @@ class CategoryController extends Controller
 
     public function destroy($id)
     {
+        // try catch: heanding errors
         try {
             $category = Category::query()->find($id); // get category by id
             unlink(public_path($category->image)); // delete image in storage folder
             $category->delete(); //delete category
+
             // response successfully
             return response()->json([
                 'status'    => 'success',
