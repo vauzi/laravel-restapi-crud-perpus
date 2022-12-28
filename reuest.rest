@@ -1,0 +1,9 @@
+###
+POST http://localhost:8000/api/author/store
+Content-Type: application/json
+{
+    "nama_lengkap": "isman vauzi", 
+    "no_hp": "085158007836", 
+    "email": "isman@gmail.com", 
+    "alamat": "Desa Karanggandu, Kec. Watulimo, Kab. Trenggalek, Prov. Jawa"
+}

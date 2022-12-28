@@ -20,14 +20,14 @@ class AuthorController extends Controller
                 'status' => 'success',
                 'message' => 'get all author information successfully',
                 'data' => $author
-            ]);
+            ], 200);
         } catch (QueryException $e) {
 
             // response error
             return response()->json([
                 'status' => 'error',
                 'message' => $e->getMessage(),
-            ]);
+            ], 500);
         }
     }
     public function store(Request $request)
@@ -36,6 +36,7 @@ class AuthorController extends Controller
         $validation = Validator::make($request->all(), [
             'name'          => ['required', 'min:3'],
             'image'         => ['required', 'image', 'mimes:jpg,png,jpeg,gif,svg', 'max:2048'],
+            'tempat_lahir'  => ['required'],
             'tgl_lahir'     => ['required'],
             'gender'        => ['required'],
             'alamat'        => ['required'],
@@ -53,11 +54,12 @@ class AuthorController extends Controller
         try {
             // insert data into authors table
             $author = Author::query()->create([
-                'name'      => $request->input('name'),
-                'image'     => 'storage/' . $image,
-                'tgl_lahir' => $request->input('tgl_lahir'),
-                'gender'    => $request->input('gender'),
-                'alamat'    => $request->input('alamat'),
+                'name'          => $request->input('name'),
+                'image'         => 'storage/' . $image,
+                'tempat_lahir'  => $request->input('tempat_lahir'),
+                'tgl_lahir'     => $request->input('tgl_lahir'),
+                'gender'        => $request->input('gender'),
+                'alamat'        => $request->input('alamat'),
             ]);
 
             // response successfully
@@ -65,13 +67,13 @@ class AuthorController extends Controller
                 'status'    => 'success',
                 'message'   => 'Created successfully',
                 'data'      => $author
-            ]);
+            ], 201);
         } catch (QueryException $e) {
             // response error
             return response()->json([
                 'status'    => 'error',
                 'message'   => $e->getMessage(),
-            ]);
+            ], 500);
         }
     }
     public function show($id)
@@ -83,13 +85,13 @@ class AuthorController extends Controller
                 'status'    => 'success',
                 'message'   => 'show author by id successfully',
                 'data'      => $author
-            ]);
+            ], 200);
         } catch (QueryException $e) {
             // response error
             return response()->json([
                 'status'    => 'error',
                 'message'   => $e->getMessage(),
-            ]);
+            ], 500);
         }
     }
     public function update(Request $request, $id)
@@ -98,6 +100,7 @@ class AuthorController extends Controller
         $validation = Validator::make($request->all(), [
             'name'          => ['required', 'min:3'],
             'image'         => ['required', 'image', 'mimes:jpg,png,jpeg,gif,svg', 'max:2048'],
+            'tempat_lahir'  => ['required'],
             'tgl_lahir'     => ['required'],
             'gender'        => ['required'],
             'alamat'        => ['required'],
@@ -124,24 +127,25 @@ class AuthorController extends Controller
             }
             // upadte author
             $author->update([
-                'name'      => $request->input('name'),
-                'image'     => $image,
-                'tgl_lahir' => $request->input('tgl_lahir'),
-                'gender'    => $request->input('gender'),
-                'alamat'    => $request->input('alamat'),
+                'name'          => $request->input('name'),
+                'image'         => $image,
+                'tempat_lahir'  => $request->input('tempat_lahir'),
+                'tgl_lahir'     => $request->input('tgl_lahir'),
+                'gender'        => $request->input('gender'),
+                'alamat'        => $request->input('alamat'),
             ]);
             // response successful
             return response()->json([
                 'status' => 'success',
                 'message' => 'Author successfully updated',
                 'data' => $author
-            ]);
+            ], 200);
         } catch (QueryException $e) {
             // response error
             return response()->json([
                 'status'    => 'error',
                 'message'   => $e->getMessage(),
-            ]);
+            ], 500);
         }
     }
 
@@ -155,13 +159,13 @@ class AuthorController extends Controller
                 'status' => 'success',
                 'message' => 'delete author successfully',
                 'data' => $author,
-            ]);
+            ], 200);
         } catch (QueryException $e) {
             // response error
             return response()->json([
                 'status'    => 'error',
                 'message'   => $e->getMessage(),
-            ]);
+            ], 500);
         }
     }
 }

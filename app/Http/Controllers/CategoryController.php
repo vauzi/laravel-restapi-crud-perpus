@@ -20,13 +20,13 @@ class CategoryController extends Controller
                 'status' => 'success',
                 'message' => 'find category get all successfully',
                 'data' => $category,
-            ]);
+            ], 200);
         } catch (QueryException $e) {
             // response error
             return response()->json([
                 'status' => 'success',
                 'message' => $e->getMessage()
-            ]);
+            ], 500);
         }
     }
 
@@ -66,7 +66,7 @@ class CategoryController extends Controller
             return response()->json([
                 'status' => 'error',
                 'message' => $e->getMessage()
-            ]);
+            ], 500);
         }
     }
 
@@ -81,13 +81,13 @@ class CategoryController extends Controller
                 'status' => 'success',
                 'message' => 'get show by id successfully',
                 'data'   => $category,
-            ]);
+            ], 200);
         } catch (QueryException $e) {
             // response error
             return response()->json([
                 'status' => 'error',
                 'message' => $e->getMessage(),
-            ]);
+            ], 500);
         }
     }
 
@@ -131,13 +131,13 @@ class CategoryController extends Controller
                 'status' => 'success',
                 'message' => 'Updated category successfully',
                 'data'   => $category,
-            ]);
+            ], 200);
         } catch (QueryException $e) {
             // response error
             return response()->json([
                 'status' => 'error',
                 'message' => $e->getMessage(),
-            ]);
+            ], 500);
         }
     }
 
@@ -154,13 +154,13 @@ class CategoryController extends Controller
                 'status'    => 'success',
                 'message'   => 'Deletes category successfully',
                 'data'      =>  $category
-            ]);
+            ], 200);
         } catch (QueryException $e) {
             // response error
             return response()->json([
                 'status'    => 'error',
                 'message'   => $e->getMessage(),
-            ]);
+            ], 300);
         }
     }
 }

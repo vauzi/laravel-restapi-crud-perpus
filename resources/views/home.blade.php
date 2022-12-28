@@ -12,11 +12,6 @@
             </tr>
         </thead>
         <tbody>
-            @foreach ($pengguna as $p)
-                <tr>
-                    <td>{{ $p['name'] }}</td>
-                </tr>
-            @endforeach
         </tbody>
     </table>
 </body>

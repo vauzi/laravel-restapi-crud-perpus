@@ -17,6 +17,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('image');
+            $table->string('tempat_lahir');
             $table->date('tgl_lahir');
             $table->string('gender');
             $table->text('alamat');
